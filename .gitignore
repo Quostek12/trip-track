@@ -7,7 +7,20 @@
 /.angular/
 .angular/
 
+# IDE / JetBrains
 .idea/
+*.sln.iml
+
+# Frontend (Node / WebStorm)
+**/node_modules/
+**/dist/
+**/build/
+.submodules/
+
+# Backend (.NET / Rider)
+**/bin/
+**/obj/
+*.user
 
 # Node modules and dependency files
 /node_modules/
