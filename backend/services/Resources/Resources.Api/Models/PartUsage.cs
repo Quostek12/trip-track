@@ -1,5 +1,3 @@
-using System;
-
 namespace Resources.Api.Models;
 
 public class PartUsage

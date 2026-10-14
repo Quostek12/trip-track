@@ -63,6 +63,15 @@ public class ResourceController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Resource>> CreateResource([FromBody] Resource resource)
     {
+        if (resource is {Type: ResourceType.Car, Quantity: > 1, SerialNumber: not null})
+        {
+            return BadRequest("Tylko jeden samochód może mieć taką tablice rejestracyjną!");
+        }
+
+        if (_context.Resources.AsQueryable().Where(r => r.SerialNumber == resource.SerialNumber).ToList().Count != 0)
+        {
+            return BadRequest("Numer seryjny musi być unikalny!");
+        }
         resource.Id = Guid.NewGuid();
         _context.Resources.Add(resource);
         await _context.SaveChangesAsync();

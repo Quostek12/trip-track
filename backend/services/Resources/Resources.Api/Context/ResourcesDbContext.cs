@@ -25,6 +25,7 @@ public class ResourcesDbContext : DbContext
             entity.Property(e => e.Quantity).HasPrecision(10, 2);
             entity.Property(e => e.Type).HasConversion<string>();
             entity.Property(e => e.Status).HasConversion<string>();
+            entity.HasIndex(e => e.SerialNumber).IsUnique();
         });
 
         modelBuilder.Entity<ResourceReservation>(entity =>

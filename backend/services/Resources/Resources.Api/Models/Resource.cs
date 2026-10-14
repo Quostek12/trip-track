@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Resources.Api.Models;
 
 public enum ResourceType

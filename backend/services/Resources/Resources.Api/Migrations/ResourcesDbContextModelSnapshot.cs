@@ -63,9 +63,9 @@ namespace Resources.Api.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
-                    b.Property<int>("Quantity")
+                    b.Property<decimal>("Quantity")
                         .HasPrecision(10, 2)
-                        .HasColumnType("integer");
+                        .HasColumnType("numeric(10,2)");
 
                     b.Property<string>("SerialNumber")
                         .HasMaxLength(100)
@@ -85,6 +85,9 @@ namespace Resources.Api.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SerialNumber")
+                        .IsUnique();
 
                     b.ToTable("Resources");
                 });
