@@ -7,6 +7,7 @@ public class ResourcesDbContext : DbContext
 {
     public ResourcesDbContext(DbContextOptions<ResourcesDbContext> options) : base(options)
     {
+        
     }
 
     public DbSet<Resource> Resources => Set<Resource>();

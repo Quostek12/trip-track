@@ -20,7 +20,8 @@ public class Trip
     
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public DateTime CreatedAt  { get; set; }
-    
-    public ICollection<TripDestination> 
+    public DateTime CreatedAt  { get; set; } = DateTime.UtcNow;
+
+    public ICollection<TripDestination> Destinations = new List<TripDestination>();
+    public ICollection<TripAssignment> Assignments = new List<TripAssignment>();
 }

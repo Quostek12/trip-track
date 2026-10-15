@@ -4,6 +4,7 @@ public class TripDestination
 {
     public Guid Id { get; set; }
     public Trip Trip { get; set; } = null!;
+    public Guid TripId { get; set; }
     public int StopOrder { get; set; }
     public string LocationName { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
