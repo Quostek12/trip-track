@@ -31,6 +31,12 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TripsDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 app.UseCors("AllowGateway");
 
 if (app.Environment.IsDevelopment())

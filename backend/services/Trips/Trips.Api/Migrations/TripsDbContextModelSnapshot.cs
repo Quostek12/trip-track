@@ -37,7 +37,8 @@ namespace Trips.Api.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
@@ -101,7 +102,7 @@ namespace Trips.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<decimal>("Latitude")
+                    b.Property<decimal?>("Latitude")
                         .HasPrecision(9, 6)
                         .HasColumnType("numeric(9,6)");
 
@@ -110,7 +111,7 @@ namespace Trips.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<decimal>("Longitude")
+                    b.Property<decimal?>("Longitude")
                         .HasPrecision(9, 6)
                         .HasColumnType("numeric(9,6)");
 
@@ -146,7 +147,7 @@ namespace Trips.Api.Migrations
 
                     b.HasKey("Date");
 
-                    b.ToTable("TripNumberHelper");
+                    b.ToTable("TripNumberHelpers");
                 });
 
             modelBuilder.Entity("Trips.Api.Models.TripAssignment", b =>

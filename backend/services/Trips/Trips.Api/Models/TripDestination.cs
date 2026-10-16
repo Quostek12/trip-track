@@ -9,8 +9,8 @@ public class TripDestination
     public string LocationName { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     
-    public decimal Latitude { get; set; }
-    public decimal Longitude { get; set; }
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
     
     public DateTime PlannedArrivalTime { get; set; }
     public DateTime PlannedDepartureTime { get; set; }

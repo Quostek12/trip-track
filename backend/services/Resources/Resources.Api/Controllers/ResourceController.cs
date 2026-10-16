@@ -88,10 +88,7 @@ public class ResourceController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateResource([FromRoute] Guid id, [FromBody] Resource resource)
     {
-        if (id != resource.Id)
-        {
-            return BadRequest("Id nie zgadza się!");
-        }
+        if (id != resource.Id) return BadRequest("Id nie zgadza się!");
 
         _context.Entry(resource).State = EntityState.Modified;
 
