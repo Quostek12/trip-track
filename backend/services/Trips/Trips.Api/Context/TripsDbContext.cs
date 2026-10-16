@@ -7,12 +7,12 @@ public class TripsDbContext : DbContext
 {
     public TripsDbContext(DbContextOptions<TripsDbContext> options) : base(options)
     {
-        
     }
 
     public DbSet<Trip> Trips => Set<Trip>();
     public DbSet<TripDestination> TripDestinations => Set<TripDestination>();
     public DbSet<TripAssignment> TripAssignments => Set<TripAssignment>();
+    public DbSet<TripNumberHelper> TripNumberHelpers => Set<TripNumberHelper>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +24,7 @@ public class TripsDbContext : DbContext
             entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
             entity.Property(e => e.ClientName).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Status).HasConversion<string>();
+            entity.Property(e => e.Description).HasMaxLength(250);
             entity.HasIndex(e => e.TripNumber).IsUnique();
         });
 

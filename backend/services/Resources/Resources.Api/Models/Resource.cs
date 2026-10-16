@@ -20,7 +20,7 @@ public class Resource
    public required string Name { get; set; }
    public string? SerialNumber { get; set; }
    public required ResourceType Type { get; set; }
-   public ResourceStatus Status { get; set; }
+   public ResourceStatus Status { get; set; } = ResourceStatus.Available;
    public string Unit { get; set; } = "szt";
    public decimal Quantity { get; set; }
 
