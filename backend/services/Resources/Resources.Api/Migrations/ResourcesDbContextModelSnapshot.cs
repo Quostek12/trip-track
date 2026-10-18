@@ -38,10 +38,6 @@ namespace Resources.Api.Migrations
                     b.Property<Guid>("TripId")
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
-
                     b.Property<DateTime>("UsedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -83,6 +79,10 @@ namespace Resources.Api.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
 
                     b.HasKey("Id");
 

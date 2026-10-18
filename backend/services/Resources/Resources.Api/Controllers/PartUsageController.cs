@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Resources.Api.Context;
+using Resources.Api.DTOs;
 using Resources.Api.Models;
 
 namespace Resources.Api.Controllers;
@@ -17,13 +18,21 @@ public class PartUsageController : ControllerBase
     }
 
     [HttpGet("trip/{tripId}")]
-    public async Task<ActionResult<IEnumerable<PartUsage>>> GetUsagePerTrip(Guid tripId)
+    public async Task<ActionResult<IEnumerable<PartUsageDTOResponse>>> GetUsagePerTrip(Guid tripId)
     {
-        return await _context.PartUsages.Include(p => p.Resource).Where(p => p.TripId == tripId).ToListAsync();
+        return await _context.PartUsages.Where(p => p.TripId == tripId).Include(p => p.Resource).Select(p => new PartUsageDTOResponse
+        {
+            Id = p.Id,
+            Resource = p.Resource,
+            ResourceId = p.ResourceId,
+            TripId = p.TripId,
+            QuantityUsed = p.QuantityUsed,
+            UsedAt = p.UsedAt,
+        }).ToListAsync();
     }
 
     [HttpPost]
-    public async Task<ActionResult<PartUsage>> RecordUsage(PartUsage usage)
+    public async Task<ActionResult<PartUsageDTOResponse>> RecordUsage(PartUsageDTORequest usage)
     {
         var resource = await _context.Resources.FindAsync(usage.ResourceId);
         if (resource == null)
@@ -42,11 +51,19 @@ public class PartUsageController : ControllerBase
         }
 
         resource.Quantity -= usage.QuantityUsed;
-        usage.Id = Guid.NewGuid();
-        usage.UsedAt = DateTime.UtcNow;
 
-        _context.PartUsages.Add(usage);
+        var result = new PartUsage()
+        {
+            Id = Guid.NewGuid(),
+            Resource = usage.Resource,
+            ResourceId = usage.ResourceId,
+            TripId = usage.TripId,
+            QuantityUsed = usage.QuantityUsed,
+            UsedAt = DateTime.UtcNow
+        };
+
+        _context.PartUsages.Add(result);
         await  _context.SaveChangesAsync();
-        return Ok(usage);
+        return Ok(result);
     }
 }

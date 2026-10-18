@@ -25,6 +25,7 @@ public class ResourcesDbContext : DbContext
             entity.Property(e => e.Unit).HasMaxLength(20);
             entity.Property(e => e.Quantity).HasPrecision(10, 2);
             entity.Property(e => e.Type).HasConversion<string>();
+            entity.Property(e => e.UnitPrice).HasPrecision(10, 2);
             entity.Property(e => e.Status).HasConversion<string>();
             entity.HasIndex(e => e.SerialNumber).IsUnique();
         });
@@ -42,8 +43,6 @@ public class ResourcesDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.QuantityUsed).HasPrecision(10, 2);
-            entity.Property(e => e.UnitPrice).HasPrecision(10, 2);
-
             entity.HasOne(p => p.Resource).WithMany(res => res.PartsUsages).HasForeignKey(p => p.ResourceId)
                 .OnDelete(DeleteBehavior.Restrict);
         });

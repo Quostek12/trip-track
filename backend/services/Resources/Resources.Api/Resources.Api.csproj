@@ -20,7 +20,6 @@
 
     <ItemGroup>
         <ProjectReference Include="../../shared/Shared.csproj" />
-        <Folder Include="DTOs\"/>
     </ItemGroup>
 
 </Project>

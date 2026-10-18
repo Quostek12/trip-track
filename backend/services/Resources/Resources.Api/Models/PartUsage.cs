@@ -8,9 +8,7 @@ public class PartUsage
     public Resource Resource { get; set; } = null!;
     
     public Guid TripId { get; set; }
-    
     public decimal QuantityUsed { get; set; }
-    public decimal UnitPrice { get; set; }
     public DateTime UsedAt { get; set; }
 }
 

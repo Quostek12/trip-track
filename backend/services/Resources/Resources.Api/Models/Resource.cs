@@ -22,6 +22,8 @@ public class Resource
    public required ResourceType Type { get; set; }
    public ResourceStatus Status { get; set; } = ResourceStatus.Available;
    public string Unit { get; set; } = "szt";
+   public decimal UnitPrice { get; set; }
+   
    public decimal Quantity { get; set; }
 
    public ICollection<ResourceReservation> Reservations { get; set; } = new List<ResourceReservation>();
