@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using Trips.Api.Models;
 using Trips.Api.Context;
 using Shared.Extensions;
@@ -38,6 +39,7 @@ public class TripNumberGenerator
             throw new BadHttpRequestException("Coś poszło nie tak z inkrementowaniem!");
         }
 
-        return today.ToString().ToTripString(number.ToString()).Replace('.', '/');
+        return today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+            .ToTripString(number.ToString(CultureInfo.InvariantCulture));
     }
 }

@@ -1,3 +1,9 @@
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Net;
+using System.Security.Claims;
+using Yarp.ReverseProxy.Transforms;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(opt =>
@@ -8,7 +14,53 @@ builder.Services.AddCors(opt =>
     });
 });
 
-builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidateAudience = true,
+        ValidAudience = jwtSettings["Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["Secret"]!)),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AuthenticatedUserPolicy", policy => policy.RequireAuthenticatedUser());
+});
+
+builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy")).AddTransforms(builderContext =>
+{
+    builderContext.AddRequestTransform(async requestContext =>
+    {
+        var user = requestContext.HttpContext.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? user.FindFirst("sub")?.Value;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                requestContext.ProxyRequest.Headers.Remove("X-User-Id");
+                requestContext.ProxyRequest.Headers.Add("X-User-Id", userId);
+            }
+            
+            var roles = string.Join(".", user.FindAll(ClaimTypes.Role).Select(x => x.Value));
+            if (!string.IsNullOrEmpty(roles))
+            {
+                requestContext.ProxyRequest.Headers.Remove("X-User-Roles");
+                requestContext.ProxyRequest.Headers.Add("X-User-Roles", roles);
+            }
+        }
+    });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,6 +80,9 @@ if (app.Environment.IsDevelopment())
         config.SwaggerEndpoint("http://localhost:7003/swagger/v1/swagger.json", "Trips Service"); // TRIPS
     });
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.MapReverseProxy();
