@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Resources.Api.Context;
 using System.Text.Json.Serialization;
 using System.Reflection;
+using Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,9 @@ builder.Services.AddCors(options =>
 var connString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ResourcesDbContext>(options => options.UseNpgsql(connString));
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers().AddJsonOptions(opt =>
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
