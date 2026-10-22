@@ -1,9 +1,18 @@
 namespace Auth.Api.DTOs;
 
-public record TokenDTOResponse(string AccessToken, string RefreshToken); // acc OUT, ref OUT
+public record UserDTOResponse(
+    Guid Id,
+    string Email,
+    string FirstName,
+    string LastName,
+    IEnumerable<string> Roles,
+    DateTime? CreatedAt,
+    DateTime? LastLoginAt
+    );
 
-public record TokenDTORequest(string AccessToken, string RefreshToken); // acc IN, ref IN
+public record UserDTORequest(
+    string Email,
+    string FirstName,
+    string LastName,
+    IEnumerable<string> Roles);
 
-public record LoginDTO(string Email, string Password);
-
-public record RegisterDTO(string Email, string Password, string FirstName, string LastName);

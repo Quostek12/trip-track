@@ -9,7 +9,6 @@ public class ResourceReservationDTORequest
     
     public Guid TripId { get; set; }
     
-    public ReservationStatus Status { get; set; } =  ReservationStatus.Reserved;
     public DateTime StartAt { get; set; }
     public DateTime EndAt { get; set; }
     public int Quantity { get; set; }
@@ -28,4 +27,10 @@ public class ResourceReservationDTOResponse
     public DateTime StartAt { get; set; }
     public DateTime EndAt { get; set; }
     public int Quantity { get; set; }
+}
+
+public class ResourceReservationStatusChangeDTORequest
+{
+    public Guid ResourceId {get; set;}
+    public ReservationStatus Status {get; set;}
 }

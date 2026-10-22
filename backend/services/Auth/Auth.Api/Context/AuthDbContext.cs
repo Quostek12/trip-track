@@ -9,6 +9,7 @@ public class AuthDbContext : IdentityDbContext<User, UserRole, Guid>
     public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) {}
     
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -18,8 +19,16 @@ public class AuthDbContext : IdentityDbContext<User, UserRole, Guid>
 
         builder.Entity<User>(entity =>
         {
+            entity.ToTable("Users");
             entity.Property(e => e.FirstName).HasMaxLength(100);
             entity.Property(e => e.LastName).HasMaxLength(100);
+            entity.Property(e => e.Email).HasMaxLength(100);
+        });
+
+        builder.Entity<UserRole>(entity =>
+        {
+            entity.ToTable("Roles");
+            entity.Property(e => e.Description).HasMaxLength(500);
         });
 
         builder.Entity<RefreshToken>(entity =>

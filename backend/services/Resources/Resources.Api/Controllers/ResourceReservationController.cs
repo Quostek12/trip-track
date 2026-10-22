@@ -1,20 +1,25 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Resources.Api.Context;
 using Resources.Api.DTOs;
 using Resources.Api.Models;
+using Shared.Services;
 
 namespace Resources.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("reservation")]
-public class ResourecReservationController : ControllerBase
+public class ResourceReservationController : ControllerBase
 {
     private readonly ResourcesDbContext _context;
+    private readonly UserService _userService;
 
-    public ResourecReservationController(ResourcesDbContext context)
+    public ResourceReservationController(ResourcesDbContext context, UserService userService) 
     {
         _context = context;
+        _userService = userService;
     }
 
     /// <summary>
@@ -77,31 +82,48 @@ public class ResourecReservationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateReservation([FromBody] ResourceReservationDTORequest resource)
+    public async Task<ActionResult> CreateReservation([FromBody] ResourceReservationDTORequest resourceReservationDto)
     {
-        var dbResource = await _context.Resources.FindAsync(resource.ResourceId);
+ 
+        switch (resourceReservationDto)
+        {
+            case null:
+                return BadRequest("Obiekt jest pusty!");
+            case var rr when rr.Quantity == 0:
+                return BadRequest("Nie można wykonywać pustych rezerwacji!");
+            case var rr when rr.StartAt > rr.EndAt:
+                return BadRequest("Błąd walidacji dat!");
+        }
+        
+        var userId = _userService.UserId;
+        var dbResource = await _context.Resources.FindAsync(resourceReservationDto.ResourceId);
         if (dbResource == null)
         {
             return NotFound("Podany zasób nie istnieje!");
+        } else if (userId == Guid.Empty || userId == null)
+        {
+            return BadRequest("Id użytkownika jest błędne!");
         }
+
+ 
 
         var newReservation = new ResourceReservation
         {
             Id = Guid.NewGuid(),
-            ResourceId = resource.ResourceId,
-            Resource = resource.Resource,
-            TripId = resource.TripId,
-            ReservedByWorker = Guid.NewGuid(), // TO BE CHANGED!!
+            ResourceId = dbResource.Id,
+            Resource = dbResource,
+            TripId = resourceReservationDto.TripId,
+            ReservedByWorker = userId ?? Guid.Empty,
             Status = ReservationStatus.Reserved,
-            StartAt = resource.StartAt,
-            EndAt = resource.EndAt,
-            Quantity = resource.Quantity,
+            StartAt = resourceReservationDto.StartAt,
+            EndAt = resourceReservationDto.EndAt,
+            Quantity = resourceReservationDto.Quantity,
         };
         
         _context.ResourceReservations.Add(newReservation);
         await _context.SaveChangesAsync();
         
-        return NoContent();
+        return Created();
     }
 
     [HttpPatch("{id}/status")]
@@ -117,6 +139,6 @@ public class ResourecReservationController : ControllerBase
         reservation.Status = status;
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(status);
     }
 }
