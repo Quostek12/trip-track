@@ -83,4 +83,17 @@ public class TripDestinationController : ControllerBase
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new {id = newDestination.Id}, newDestination);
     }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteTripDestination([FromRoute] Guid id)
+    {
+        var query = await _context.TripDestinations.FindAsync(id);
+        if (query == null) return NotFound("Nie znaleziono takiego celu podróży!");
+
+        _context.TripDestinations.Remove(query);
+        await _context.SaveChangesAsync();
+
+        return NoContent
+            ();
+    }
 }

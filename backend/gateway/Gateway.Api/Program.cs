@@ -53,7 +53,7 @@ builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSecti
                 requestContext.ProxyRequest.Headers.Add("X-User-Id", userId);
             }
             
-            var roles = string.Join(".", user.FindAll(ClaimTypes.Role).Select(x => x.Value));
+            var roles = string.Join(",", user.FindAll(ClaimTypes.Role).Select(x => x.Value));
             if (!string.IsNullOrEmpty(roles))
             {
                 requestContext.ProxyRequest.Headers.Remove("X-User-Roles");

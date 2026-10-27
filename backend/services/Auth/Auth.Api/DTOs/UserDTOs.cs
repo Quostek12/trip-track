@@ -11,8 +11,13 @@ public record UserDTOResponse(
     );
 
 public record UserDTORequest(
+    Guid Id,
     string Email,
     string FirstName,
-    string LastName,
+    string LastName
+    );
+
+public record UserStatusChangeDTORequest(
+    Guid Id,
     IEnumerable<string> Roles);
 

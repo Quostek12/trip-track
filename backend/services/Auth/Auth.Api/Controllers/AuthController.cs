@@ -35,13 +35,13 @@ public class AuthController : ControllerBase
         _roleManager = roleManager;
     }
 
-    [HttpPost("login")]
     [AllowAnonymous]
+    [HttpPost("login")]
     public async Task<ActionResult<TokenDTOResponse>> Login([FromBody] LoginDTO dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
         
-        if (user is null or{IsActive: false})
+        if (user is null or {IsActive: false})
         {
             return Unauthorized("Niepoprawne dane logowania lub konto jest nieaktywne!");
         } else if (User.Identity is { IsAuthenticated: true })

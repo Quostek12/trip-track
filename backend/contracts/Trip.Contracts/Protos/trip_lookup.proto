@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "Trip.Contracts";
+
+package trip.v1;
+
+service TripLookup {
+  rpc Exists (TripExistsRequest)  returns (TripExistsResponse);
+  rpc GetSummary (TripSummaryRequest) returns (TripSummaryResponse);
+}
+
+message TripExistsRequest {
+  string trip_id = 1;
+}
+
+message TripExistsResponse {
+  bool exists = 1;
+  TripStatus status = 2;
+}
+
+message TripSummaryRequest {
+  string trip_id = 1;
+}
+
+message TripSummaryResponse {
+  string trip_number = 1;
+  string title = 2;
+  string client_name = 3;
+}
+
+enum TripStatus {
+  TRIP_STATUS_UNSPECIFIED = 0;
+  TRIP_STATUS_PLANNED = 1;
+  TRIP_STATUS_IN_TRANSIT = 2;
+  TRIP_STATUS_ON_SITE = 3;
+  TRIP_STATUS_COMPLETED = 4;
+  TRIP_STATUS_CANCELLED = 5;
+}

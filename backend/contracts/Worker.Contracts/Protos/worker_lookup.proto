@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option csharp_namespace = "Worker.Contracts";
+
+package worker.v1;
+
+service WorkerLookup {
+  rpc Exists (WorkerExistsRequest) returns (WorkerExistsResponse);
+  rpc GetSummary (WorkerSummaryRequest) returns (WorkerSummaryResponse);
+}
+
+message WorkerExistsRequest {
+  string worker_id = 1; //GUID as string
+}
+
+message WorkerExistsResponse {
+  bool exists = 1;
+  bool isActive = 2;
+}
+
+message WorkerSummaryRequest {
+  string worker_id = 1;
+}
+
+message WorkerSummaryResponse {
+  string worker_id = 1;
+  string worker_display_name = 2;
+  bool isActive = 3;
+}

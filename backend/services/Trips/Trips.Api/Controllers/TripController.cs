@@ -38,17 +38,17 @@ public class TripController : ControllerBase
                 TripId = d.TripId,
                 Address  = d.Address,
                 Latitude = d.Latitude,
-              Longitude = d.Longitude,
-              LocationName = d.LocationName,
-              StopOrder = d.StopOrder,
-              PlannedArrivalTime = d.PlannedArrivalTime,
-              PlannedDepartureTime = d.PlannedDepartureTime,
-              Notes = d.Notes
+                Longitude = d.Longitude,
+                LocationName = d.LocationName,
+                StopOrder = d.StopOrder,
+                PlannedArrivalTime = d.PlannedArrivalTime,
+                PlannedDepartureTime = d.PlannedDepartureTime,
+                Notes = d.Notes
             }).ToList(),
             Assignments = t.Assignments.Select(a => new TripAssignmentDTOResponse
             {
+                Id = a.Id,
                 TripId = a.TripId,
-                Trip = a.Trip,
                 WorkerId = a.WorkerId,
                 AssignedAt = a.AssignedAt,
             }).ToList(),

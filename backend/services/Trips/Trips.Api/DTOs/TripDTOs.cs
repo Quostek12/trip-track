@@ -15,6 +15,15 @@ public class TripDTORequest
     public ICollection<TripAssignment> Assignments = new List<TripAssignment>();
 }
 
+public class TripSummaryDTO
+{
+    public Guid Id { get; set; }
+    public string TripNumber { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string ClientName { get; set; } = string.Empty;
+    public TripStatus Status {get; set;}
+}
+
 public class TripDTOResponse
 {
     public Guid Id { get; set; }

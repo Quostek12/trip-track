@@ -7,13 +7,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0"/>
-        <ProjectReference Include="../../../shared/Shared.csproj"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3"/>
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="../../../shared/Shared.csproj" />
       <Folder Include="Controllers\" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\contracts\Worker.Contracts\Protos\Worker.Contracts.csproj" />
+        <PackageReference Include="Grpc.AspNetCore" version="2.84.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Reference Include="Microsoft.EntityFrameworkCore">
+        <HintPath>..\..\..\..\..\..\.nuget\packages\microsoft.entityframeworkcore\10.0.13\lib\net10.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
