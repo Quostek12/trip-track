@@ -23,7 +23,15 @@ public class PartUsageController : ControllerBase
         return await _context.PartUsages.Where(p => p.TripId == tripId).Include(p => p.Resource).Select(p => new PartUsageDTOResponse
         {
             Id = p.Id,
-            Resource = p.Resource,
+            Resource = new ResourceSummaryDTO
+            {
+                Id = p.Resource.Id,
+                Name = p.Resource.Name,
+                SerialNumber = p.Resource.SerialNumber,
+                Type = p.Resource.Type,
+                Status = p.Resource.Status,
+                Unit = p.Resource.Unit
+            },
             ResourceId = p.ResourceId,
             TripId = p.TripId,
             QuantityUsed = p.QuantityUsed,
@@ -55,7 +63,7 @@ public class PartUsageController : ControllerBase
         var result = new PartUsage()
         {
             Id = Guid.NewGuid(),
-            Resource = usage.Resource,
+            Resource = resource,
             ResourceId = usage.ResourceId,
             TripId = usage.TripId,
             QuantityUsed = usage.QuantityUsed,
@@ -64,6 +72,22 @@ public class PartUsageController : ControllerBase
 
         _context.PartUsages.Add(result);
         await  _context.SaveChangesAsync();
-        return Ok(result);
+        return Ok(new PartUsageDTOResponse
+        {
+            Id = result.Id,
+            ResourceId = result.ResourceId,
+            Resource = new ResourceSummaryDTO
+            {
+                Id = resource.Id,
+                Name = resource.Name,
+                SerialNumber = resource.SerialNumber,
+                Type = resource.Type,
+                Status = resource.Status,
+                Unit = resource.Unit
+            },
+            TripId = result.TripId,
+            QuantityUsed = result.QuantityUsed,
+            UsedAt = result.UsedAt
+        });
     }
 }

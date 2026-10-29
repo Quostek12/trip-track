@@ -34,7 +34,14 @@ public class TripController : ControllerBase
             Status = t.Status,
             Destinations = t.Destinations.Select(d => new TripDestinationDTOResponse
             { 
-                Trip = d.Trip,
+                Trip = new TripSummaryDTO
+                {
+                    Id = d.Trip.Id,
+                    TripNumber = d.Trip.TripNumber,
+                    Title = d.Trip.Title,
+                    ClientName = d.Trip.ClientName,
+                    Status = d.Trip.Status
+                },
                 TripId = d.TripId,
                 Address  = d.Address,
                 Latitude = d.Latitude,
@@ -49,6 +56,13 @@ public class TripController : ControllerBase
             {
                 Id = a.Id,
                 TripId = a.TripId,
+                Trip = new TripSummaryDTO
+                {
+                    ClientName = a.Trip.ClientName,
+                    Id = a.Trip.Id,
+                    Title = a.Trip.Title,
+                    TripNumber = a.Trip.TripNumber
+                },
                 WorkerId = a.WorkerId,
                 AssignedAt = a.AssignedAt,
             }).ToList(),
@@ -72,7 +86,14 @@ public class TripController : ControllerBase
             Status = t.Status,
             Destinations = t.Destinations.Select(d => new TripDestinationDTOResponse
             { 
-                Trip = d.Trip,
+                Trip = new TripSummaryDTO
+                {
+                    Id = d.Trip.Id,
+                    TripNumber = d.Trip.TripNumber,
+                    Title = d.Trip.Title,
+                    ClientName = d.Trip.ClientName,
+                    Status = d.Trip.Status
+                },
                 TripId = d.TripId,
                 Address  = d.Address,
                 Latitude = d.Latitude,
@@ -85,8 +106,15 @@ public class TripController : ControllerBase
             }).ToList(),
             Assignments = t.Assignments.Select(a => new TripAssignmentDTOResponse
             {
+                Id = a.TripId,
                 TripId = a.TripId,
-                Trip = a.Trip,
+                Trip = new TripSummaryDTO
+                {
+                    ClientName = a.Trip.ClientName,
+                    Id = a.Trip.Id,
+                    Title = a.Trip.Title,
+                    TripNumber = a.Trip.TripNumber
+                },
                 WorkerId = a.WorkerId,
                 AssignedAt = a.AssignedAt,
             }).ToList(),
@@ -125,9 +153,19 @@ public class TripController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateTrip([FromRoute] Guid id, [FromBody] TripDTORequest trip)
+    public async Task<IActionResult> UpdateTrip([FromRoute] Guid id, [FromBody] Trip trip)
     {
-        _context.Entry(trip).State = EntityState.Modified;
+        var entry = await _context.Trips.FindAsync(id);
+        if (entry is null) return NotFound("Nie znaleziono takiego wyjazdu!");
+        if (trip.Id != Guid.Empty && trip.Id != id) return BadRequest("Id nie zgadza się!");
+
+        entry.Title = trip.Title;
+        entry.Description = trip.Description;
+        entry.ClientName = trip.ClientName;
+        entry.Status = trip.Status;
+        entry.StartDate = trip.StartDate;
+        entry.EndDate = trip.EndDate;
+
         try
         {
             await _context.SaveChangesAsync();
@@ -135,6 +173,7 @@ public class TripController : ControllerBase
         catch (DbUpdateConcurrencyException)
         {
             if (!await _context.Trips.AnyAsync(r => r.Id == id)) return NotFound();
+            throw;
         }
         return NoContent();
     }

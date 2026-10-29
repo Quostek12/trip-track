@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Trip.Contracts";
+option csharp_namespace = "Contracts.TripLookup";
 
 package trip.v1;
 

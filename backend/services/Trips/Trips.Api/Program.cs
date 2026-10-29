@@ -1,10 +1,25 @@
 using Trips.Api.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Text.Json.Serialization;
 using System.Reflection;
 using Shared.Services;
+using Trips.Api.Services;
+using Worker.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(7003, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http1;
+    });
+    options.ListenLocalhost(7103, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -16,9 +31,15 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddGrpcClient<WorkerLookup.WorkerLookupClient>(opt =>
+{
+    opt.Address = new Uri("http://localhost:7102");
+});
+
 var connString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<TripsDbContext>(options => options.UseNpgsql(connString));
+builder.Services.AddGrpc();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -42,6 +63,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowGateway");
+app.MapGrpcService<TripLookupService>();
 
 if (app.Environment.IsDevelopment())
 {

@@ -1,15 +1,14 @@
-using Trips.Api.Models;
-
 namespace Trips.Api.DTOs;
 
 public class TripDestinationDTORequest
 {
-    public Trip Trip { get; set; } = null!;
     public Guid TripId { get; set; }
     public int StopOrder { get; set; }
     public string LocationName { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
     public DateTime PlannedArrivalTime { get; set; }
     public DateTime PlannedDepartureTime { get; set; }
     
@@ -18,7 +17,8 @@ public class TripDestinationDTORequest
 
 public class TripDestinationDTOResponse
 {
-    public Trip Trip { get; set; } = null!;
+    public Guid Id { get; set; }
+    public TripSummaryDTO Trip { get; set; } = null!;
     public Guid TripId { get; set; }
     public int StopOrder { get; set; }
     public string LocationName { get; set; } = string.Empty;

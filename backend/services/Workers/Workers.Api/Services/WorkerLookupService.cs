@@ -15,7 +15,11 @@ public sealed class WorkerLookupService : WorkerLookup.WorkerLookupBase
     
     public override async Task<WorkerExistsResponse> Exists(WorkerExistsRequest request, ServerCallContext context)
     {
-        var workerId = Guid.Parse(request.WorkerId);
+        if (!Guid.TryParse(request.WorkerId, out var workerId))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "worker_id must be a GUID."));
+        }
+
         var worker = await _context.Workers.AsNoTracking()
             .FirstOrDefaultAsync(wrk => wrk.Id == workerId, context.CancellationToken);
 
@@ -28,7 +32,10 @@ public sealed class WorkerLookupService : WorkerLookup.WorkerLookupBase
 
     public override async Task<WorkerSummaryResponse> GetSummary(WorkerSummaryRequest request, ServerCallContext context)
     {
-        var workerId = Guid.Parse(request.WorkerId);
+        if (!Guid.TryParse(request.WorkerId, out var workerId))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "worker_id must be a GUID."));
+        }
         
         var worker = await _context.Workers.AsNoTracking()
             .FirstOrDefaultAsync(wrk => wrk.Id == workerId, context.CancellationToken);

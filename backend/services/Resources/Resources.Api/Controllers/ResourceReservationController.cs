@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Resources.Api.Context;
@@ -8,15 +7,14 @@ using Shared.Services;
 
 namespace Resources.Api.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("reservation")]
 public class ResourceReservationController : ControllerBase
 {
     private readonly ResourcesDbContext _context;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public ResourceReservationController(ResourcesDbContext context, UserService userService) 
+    public ResourceReservationController(ResourcesDbContext context, IUserService userService) 
     {
         _context = context;
         _userService = userService;
@@ -35,7 +33,15 @@ public class ResourceReservationController : ControllerBase
         {
             Id = r.Id,
             ResourceId = r.ResourceId,
-            Resource = r.Resource,
+            Resource = new ResourceSummaryDTO
+            {
+                Id = r.Resource.Id,
+                Name = r.Resource.Name,
+                SerialNumber = r.Resource.SerialNumber,
+                Type = r.Resource.Type,
+                Status = r.Resource.Status,
+                Unit = r.Resource.Unit
+            },
             TripId = r.TripId,
             ReservedByWorker = r.ReservedByWorker,
             Status = r.Status,
@@ -64,7 +70,15 @@ public class ResourceReservationController : ControllerBase
         {
             Id = r.Id,
             ResourceId = r.ResourceId,
-            Resource = r.Resource,
+            Resource = new ResourceSummaryDTO
+            {
+                Id = r.Resource.Id,
+                Name = r.Resource.Name,
+                SerialNumber = r.Resource.SerialNumber,
+                Type = r.Resource.Type,
+                Status = r.Resource.Status,
+                Unit = r.Resource.Unit
+            },
             TripId = r.TripId,
             ReservedByWorker = r.ReservedByWorker,
             Status = r.Status,
@@ -82,7 +96,8 @@ public class ResourceReservationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateReservation([FromBody] ResourceReservationDTORequest resourceReservationDto)
+    public async Task<ActionResult<ResourceReservationDTOResponse>> CreateReservation(
+        [FromBody] ResourceReservationDTORequest resourceReservationDto)
     {
  
         switch (resourceReservationDto)
@@ -123,11 +138,32 @@ public class ResourceReservationController : ControllerBase
         _context.ResourceReservations.Add(newReservation);
         await _context.SaveChangesAsync();
         
-        return Created();
+        return CreatedAtAction(nameof(GetReservationById), new { id = newReservation.Id },
+            new ResourceReservationDTOResponse
+            {
+                Id = newReservation.Id,
+                ResourceId = newReservation.ResourceId,
+                Resource = new ResourceSummaryDTO
+                {
+                    Id = dbResource.Id,
+                    Name = dbResource.Name,
+                    SerialNumber = dbResource.SerialNumber,
+                    Type = dbResource.Type,
+                    Status = dbResource.Status,
+                    Unit = dbResource.Unit
+                },
+                TripId = newReservation.TripId,
+                ReservedByWorker = newReservation.ReservedByWorker,
+                Status = newReservation.Status,
+                StartAt = newReservation.StartAt,
+                EndAt = newReservation.EndAt,
+                Quantity = newReservation.Quantity
+            });
     }
 
     [HttpPatch("{id}/status")]
-    public async Task<ActionResult<ResourceReservation>> UpdateStatus([FromBody] ReservationStatus status,
+    public async Task<ActionResult<ResourceReservationDTOResponse>> UpdateStatus(
+        [FromBody] ResourceReservationStatusChangeDTORequest statusRequest,
         [FromRoute] Guid id)
     {
         var reservation = await _context.ResourceReservations.FindAsync(id);
@@ -136,9 +172,44 @@ public class ResourceReservationController : ControllerBase
             return NotFound("Nie ma takiej rezerwacji!");
         }
 
-        reservation.Status = status;
+        reservation.Status = statusRequest.Status;
         await _context.SaveChangesAsync();
 
-        return Ok(status);
+        var response = await _context.ResourceReservations
+            .Where(r => r.Id == id)
+            .Select(r => new ResourceReservationDTOResponse
+            {
+                Id = r.Id,
+                ResourceId = r.ResourceId,
+                Resource = new ResourceSummaryDTO
+                {
+                    Id = r.Resource.Id,
+                    Name = r.Resource.Name,
+                    SerialNumber = r.Resource.SerialNumber,
+                    Type = r.Resource.Type,
+                    Status = r.Resource.Status,
+                    Unit = r.Resource.Unit
+                },
+                TripId = r.TripId,
+                ReservedByWorker = r.ReservedByWorker,
+                Status = r.Status,
+                StartAt = r.StartAt,
+                EndAt = r.EndAt,
+                Quantity = r.Quantity
+            })
+            .SingleAsync();
+
+        return Ok(response);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteReservation([FromRoute] Guid id)
+    {
+        var query = await _context.ResourceReservations.FindAsync(id);
+        if (query is null) return NotFound("Nie znaleziono takiej rezerwacji!");
+        
+        _context.ResourceReservations.Remove(query);
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 }

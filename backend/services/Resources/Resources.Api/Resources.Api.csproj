@@ -20,6 +20,8 @@
 
     <ItemGroup>
         <ProjectReference Include="../../../shared/Shared.csproj"/>
+        <ProjectReference Include="../../../contracts/Resource.Contracts/Protos/Resource.Contracts.csproj"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.66.0"/>
     </ItemGroup>
 
 </Project>

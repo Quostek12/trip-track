@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "Resource.Contracts"
+option csharp_namespace = "Contracts.ResourceLookup";
     
-package resource.v1
+package resource.v1;
 
 service ResourceLookup {
   rpc Exists (ResourceExistsRequest) returns (ResourceExistsResponse);
@@ -37,6 +37,6 @@ enum ResourceStatus {
 
 enum ResourceType {
   RESOURCE_TYPE_TOOL = 0;
-  RESOURCE_TYPE_IN_USE = 1;
+  RESOURCE_TYPE_CAR = 1;
   RESOURCE_TYPE_CONSUMABLE = 2;
 }

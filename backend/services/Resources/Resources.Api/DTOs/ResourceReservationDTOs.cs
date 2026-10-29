@@ -5,8 +5,6 @@ namespace Resources.Api.DTOs;
 public class ResourceReservationDTORequest
 {
     public Guid ResourceId { get; set; }
-    public Resource Resource { get; set; } = null!;
-    
     public Guid TripId { get; set; }
     
     public DateTime StartAt { get; set; }
@@ -18,7 +16,7 @@ public class ResourceReservationDTOResponse
 {
     public Guid Id { get; set; }
     public Guid ResourceId { get; set; }
-    public Resource Resource { get; set; } = null!;
+    public ResourceSummaryDTO Resource { get; set; } = null!;
     
     public Guid TripId { get; set; }
     public Guid ReservedByWorker { get; set; }
@@ -31,6 +29,5 @@ public class ResourceReservationDTOResponse
 
 public class ResourceReservationStatusChangeDTORequest
 {
-    public Guid ResourceId {get; set;}
-    public ReservationStatus Status {get; set;}
+    public ReservationStatus Status { get; set; }
 }

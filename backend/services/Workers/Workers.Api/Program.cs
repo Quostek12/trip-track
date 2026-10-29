@@ -1,10 +1,23 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Shared.Services;
 using Worker.Contracts;
 using Workers.Api.Context;
 using Workers.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(7002, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http1;
+    });
+    options.ListenLocalhost(7102, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -29,6 +42,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<WorkersDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 app.MapGrpcService<WorkerLookupService>(); 
 app.UseCors("AllowGateway");
 

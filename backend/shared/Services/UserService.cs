@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace Shared.Services;
 
